@@ -1,0 +1,150 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Stopwatch</title>
+<style>
+    body {
+        font-family: Arial, sans-serif;
+        text-align: center;
+        background-image: url('https://cdn.pixabay.com/photo/2013/07/12/18/30/stopwatch-153398_1280.png'); 
+        background-size: cover;
+        background-position: center;
+        margin: 0;
+        padding: 0;
+    }
+    #content {
+        max-width: 600px;
+        margin: 50px auto;
+        padding: 20px;
+        background-color: rgba(255, 255, 255, 0.8);
+        border-radius: 10px;
+        box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    }
+    h1 {
+        color: #333;
+    }
+    p {
+        color: #666;
+        line-height: 1.6;
+    }
+    #timer {
+        font-size: 3em;
+        margin-bottom: 20px;
+        color: #333;
+    }
+    #controls {
+        margin-bottom: 20px;
+    }
+    button {
+        font-size: 1.5em; ze 
+        padding: 15px 30px; 
+        margin: 0 10px;
+        cursor: pointer;
+        background-color: #007bff; 
+        color: white;
+        border: none;
+        border-radius: 8px;
+        box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+    }
+    button:hover {
+        background-color: #0056b3; 
+    }
+    #lap-times {
+        text-align: left;
+        margin: 0 auto;
+        max-width: 300px;
+        padding: 10px;
+        background-color: #f9f9f9;
+        border-radius: 5px;
+        box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    }
+    .lap-item {
+        padding: 8px;
+        border-bottom: 1px solid #ddd;
+        color: #444;
+    }
+</style>
+</head>
+<body>
+<div id="content">
+    <h1>Stopwatch</h1>
+    <p>Welcome to our stopwatch application! You can use this stopwatch to measure time intervals accurately. Simply click the Start button to begin timing, and click the Pause button to pause the timer. You can also click the Lap button to record lap times.</p>
+    <p>Feel free to use this stopwatch for various activities such as timing workouts, cooking, or any other time-sensitive tasks.</p>
+    <div id="timer">00:00:00</div>
+    <div id="controls">
+        <button onclick="start()">Start</button>
+        <button onclick="pause()">Pause</button>
+        <button onclick="reset()">Reset</button>
+        <button onclick="lap()">Lap</button>
+    </div>
+    <div id="lap-times"></div>
+</div>
+
+<script>
+    let timerInterval;
+    let startTime;
+    let elapsedTime = 0;
+    let isRunning = false;
+    let lapTimes = [];
+
+    function start() {
+        if (!isRunning) {
+            isRunning = true;
+            startTime = Date.now() - elapsedTime;
+            timerInterval = setInterval(updateTimer, 10);
+        }
+    }
+
+    function pause() {
+        if (isRunning) {
+            isRunning = false;
+            clearInterval(timerInterval);
+        }
+    }
+
+    function reset() {
+        clearInterval(timerInterval);
+        isRunning = false;
+        elapsedTime = 0;
+        startTime = Date.now(); 
+        updateTimer();
+        lapTimes = [];
+        const lapList = document.getElementById('lap-times');
+        lapList.innerHTML = '';
+    }
+
+    function updateTimer() {
+        const currentTime = Date.now();
+        elapsedTime = currentTime - startTime;
+        const formattedTime = formatTime(elapsedTime);
+        document.getElementById('timer').textContent = formattedTime;
+    }
+
+    function formatTime(time) {
+        const totalSeconds = Math.floor(time / 1000);
+        const minutes = Math.floor(totalSeconds / 60);
+        const seconds = totalSeconds % 60;
+        const milliseconds = Math.floor((time % 1000) / 10);
+        return `${padTime(minutes)}:${padTime(seconds)}:${padTime(milliseconds)}`;
+    }
+
+    function padTime(value) {
+        return value < 10 ? `0${value}` : value;
+    }
+    function lap() {
+        if (isRunning) {
+            const lapTime = elapsedTime;
+            lapTimes.push(lapTime);
+            const formattedLapTime = formatTime(lapTime);
+            const lapList = document.getElementById('lap-times');
+            const lapItem = document.createElement('div');
+            lapItem.classList.add('lap-item');
+            lapItem.textContent = `Lap ${lapTimes.length}: ${formattedLapTime}`;
+            lapList.appendChild(lapItem);
+        }
+    }
+</script>
+</body>
+</html>
